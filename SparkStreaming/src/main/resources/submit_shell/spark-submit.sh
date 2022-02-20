@@ -19,3 +19,7 @@
  --num-executors 3 \
  --executor-cores 2 \
  /usr/apps/jobs/SparkStreaming-1.0-SNAPSHOT.jar \ > /root/jobs/logs/flumestream.log 2>&1 &
+
+
+ -- 3 关闭集群
+ yarn application -kill application_1644550318601_0108

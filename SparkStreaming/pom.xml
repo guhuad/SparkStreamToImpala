@@ -137,6 +137,15 @@
             <artifactId>hbase-client</artifactId>
             <version>1.2.6</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.impala</groupId>
+            <artifactId>org.impala</artifactId>
+            <version>41</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ImpalaJDBC41.jar</systemPath>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.apache.phoenix</groupId>

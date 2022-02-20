@@ -18,7 +18,7 @@ object OffsetUtil {
   //从数据库读取偏移量
   def getOffsetMap(groupid: String, topic: String) = {
   //  Class.forName("com.mysql.jdbc.Driver")
-    val connection = DriverManager.getConnection("jdbc:mysql://172.17.20.121:3306/test?characterEncoding=UTF-8", "root", "875362")
+    val connection = DriverManager.getConnection("jdbc:mysql://172.17.20.131:3306/test?characterEncoding=UTF-8&verifyServerCertificate=false&useSSL=false", "root", "875362")
     val pstmt = connection.prepareStatement("select * from t_offset where groupid=? and topic=?")
     pstmt.setString(1, groupid)
     pstmt.setString(2, topic)
@@ -36,7 +36,7 @@ object OffsetUtil {
   //将偏移量保存到数据库
   def saveOffsetRanges(groupid: String, offsetRange: Array[OffsetRange]) = {
    // Class.forName("com.mysql.jdbc.Driver")
-    val connection = DriverManager.getConnection("jdbc:mysql://172.17.20.121:3306/test?characterEncoding=UTF-8", "root", "875362")
+    val connection = DriverManager.getConnection("jdbc:mysql://172.17.20.131:3306/test?characterEncoding=UTF-8&verifyServerCertificate=false&useSSL=false", "root", "875362")
     //replace into表示之前有就替换,没有就插入
     val pstmt = connection.prepareStatement("replace into t_offset (`topic`, `partition`, `groupid`, `offset`) values(?,?,?,?)")
     for (o <- offsetRange) {

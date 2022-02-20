@@ -9,12 +9,12 @@ import com.jaeyeong.datalake.datapipeline.bean.{MysqlSBRBean, ResultBean}
 
 object SqlContants {
 
-  private val DATABASE_STR = "joymeo_dev"
+  private val DATABASE_STR = "joymeo_data"
 
   private val JDBC_DRIVER = "com.cloudera.impala.jdbc41.Driver"
 
   // private static String CONNECTION_URL="jdbc:impala://node1:21050/default;auth=noSasl";
-  private val CONNECTION_URL = "jdbc:impala://172.17.20.122:21050/"
+  private val CONNECTION_URL = "jdbc:impala://172.17.20.133:21050/"
 
  // private val DATABASE_STR = "joymeo_data"
 
@@ -215,6 +215,7 @@ object SqlContants {
     var jsonObjectData = JSON.parseObject("")
     val jsonObjectType = JSON.parseObject(mysqlBean.mysqlType)
     val jsonObjectOld = JSON.parseArray(mysqlBean.old)
+
     //拼接 where 条件
     val pks = JSON.parseArray(mysqlBean.pkNames)
     for (j <- 0 until dataObjects.size) {
@@ -225,10 +226,33 @@ object SqlContants {
       //拼接 where ,
       sb1.append(" where ")
       import scala.collection.JavaConversions._
-      for (pk <- pks) { // sb1.append(pk.toString()+",");
-        if (jsonObjectType.getString(pk.toString).toLowerCase.contains("int") || jsonObjectType.getString(pk.toString).toLowerCase.contains("decimal") || jsonObjectType.getString(pk.toString).toLowerCase.contains("float") || jsonObjectType.getString(pk.toString).toLowerCase.contains("double")) sb2.append("`" + pk.toString + "`" + " = " + jsonObjectData.getString(pk.toString) + ",")
-        else sb2.append("`" + pk.toString + "`" + " = " + "'" + jsonObjectData.getString(pk.toString) + "'" + ",")
+
+
+      if(mysqlBean.pkNames ==null){
+
+        val strings = jsonObjectType.keySet
+        // Collection<Object> values = jsonObject1.values();
+        val objects = strings.toArray
+        for (i <- 0 until strings.size) {
+        //  sb1.append("`" + objects(i).toString + "`" + ",")
+          if (jsonObjectData.getString(objects(i).toString).toLowerCase.contains("int") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("decimal") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("float") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("double")) sb2.append("`" + objects(i).toString + "`" + " = " + jsonObjectData.getString(objects(i).toString) + ",")
+          else {
+            sb2.append("`" + objects(i).toString + "`" + " = " + "'" + jsonObjectData.getString(objects(i).toString) + "'" + ",")
+            //  int a = 1;
+          }
+        }
+
+        val a = 1
+      } else {
+
+        for (pk <- pks) { // sb1.append(pk.toString()+",");
+          if (jsonObjectType.getString(pk.toString).toLowerCase.contains("int") || jsonObjectType.getString(pk.toString).toLowerCase.contains("decimal") || jsonObjectType.getString(pk.toString).toLowerCase.contains("float") || jsonObjectType.getString(pk.toString).toLowerCase.contains("double")) sb2.append("`" + pk.toString + "`" + " = " + jsonObjectData.getString(pk.toString) + ",")
+          else sb2.append("`" + pk.toString + "`" + " = " + "'" + jsonObjectData.getString(pk.toString) + "'" + ",")
+        }
       }
+
+
+
       // 掉条件 where 【,】
       sb2.deleteCharAt(sb2.lastIndexOf(",")).toString
       updateSqls.add(sqlStr + sb1.toString + sb2.toString)
