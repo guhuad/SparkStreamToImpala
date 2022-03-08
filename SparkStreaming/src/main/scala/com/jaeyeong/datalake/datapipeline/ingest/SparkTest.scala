@@ -15,7 +15,7 @@ import org.apache.spark.sql.SQLContext
 
 import scala.collection.mutable
 import scala.collection.mutable.Map
-object SparkData extends App with Serializable {
+object SparkTest extends App with Serializable {
 
     //1.创建SrearmingContext
     val conf = new SparkConf().setAppName(this.getClass.getSimpleName)
@@ -91,7 +91,7 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
       if (rdd.count() > 0) { //当前这一时间批次有数据
         rdd.foreach(record => {
           val mysqlBean: MysqlSBRBean = JSON.parseObject(record.value(), classOf[MysqlSBRBean])
-            println("接收到的Kafk发送过来的数据为:" + record)
+         //   println("接收到的Kafk发送过来的数据为:" + record)
 
 
           try if ("INSERT" == mysqlBean.`type`) { // Contants.createDb(mysqlBean);

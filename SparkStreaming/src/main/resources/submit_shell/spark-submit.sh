@@ -1,5 +1,5 @@
  -- 1
- nohup sudo -u spark spark-submit --class com.jaeyeong.datalake.datapipeline.ingest.SparkTest \
+ nohup sudo -u spark spark-submit --class com.jaeyeong.datalake.datapipeline.ingest.SparkData \
  --master yarn \
  --deploy-mode cluster \
  --conf spark.driver.extraJavaOptions=" -Dfile.encoding=utf-8 " \
@@ -10,7 +10,7 @@
 
 
  -- 2
- nohup sudo -u spark spark-submit --class com.jaeyeong.datalake.datapipeline.ingest.SparkTest \
+ nohup sudo -u spark spark-submit --class com.jaeyeong.datalake.datapipeline.ingest.SparkData \
  --master yarn \
  --deploy-mode client \
  --conf spark.driver.extraJavaOptions=" -Dfile.encoding=utf-8 " \
@@ -19,8 +19,8 @@
  --executor-memory 1g \
  --num-executors 3 \
  --executor-cores 2 \
- /usr/apps/jobs/SparkStreaming-1.0-SNAPSHOT.jar \ > /root/jobs/logs/flumestream.log 2>&1 &
+ /usr/apps/jobs/SparkStreaming-1.0-SNAPSHOT.jar \ > /usr/apps/jobs/flumestream.log 2>&1 &
 
 
  -- 3 关闭集群
- yarn application -kill application_1644550318601_0158
+ yarn application -kill application_1644550318601_0162

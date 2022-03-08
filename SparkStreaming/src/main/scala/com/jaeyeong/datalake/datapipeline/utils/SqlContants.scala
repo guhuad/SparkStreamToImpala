@@ -293,11 +293,12 @@ object SqlContants {
     val alterSqls = new util.ArrayList[String]
     val datebase = mysqlBean.data
     val table1 = mysqlBean.table
-    val db_tb = "`"+mysqlBean.database +"`"+"."+"`"+mysqlBean.table+"`"
+    val db_tb = mysqlBean.table
     val sqlStr = " ALTER TABLE  `" + DATABASE_STR + "`.`" + "ods_mysql_" + mysqlBean.database + "_" + mysqlBean.table + "_" + "a" + "` "
     val alterSql_dec = mysqlBean.sql
     //修改 decimal(10, 2) 为 decimal(10,2),去掉空格干扰
-    val alterSql1 = alterSql_dec.replaceAll(", ", ",")
+    val alterSql0 = alterSql_dec.replaceAll("`, `", "")
+    val alterSql1 = alterSql0.replaceAll(", ", ",")
     val sql_sqlsplit = alterSql1.split(db_tb)
     val alterStr = sql_sqlsplit(1)
     val alterDele_n = alterStr.replaceAll("\n", "")
