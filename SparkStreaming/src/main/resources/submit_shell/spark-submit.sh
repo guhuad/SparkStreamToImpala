@@ -23,4 +23,4 @@
 
 
  -- 3 关闭集群
- yarn application -kill application_1644550318601_0162
+ yarn application -kill application_1644550318601_0164
