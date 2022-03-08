@@ -6,15 +6,20 @@ import java.util.{ArrayList, List, Set}
 
 import com.alibaba.fastjson.{JSON, JSONArray, JSONObject}
 import com.jaeyeong.datalake.datapipeline.bean.{MysqlSBRBean, ResultBean}
+import com.typesafe.config.ConfigFactory
 
 object SqlContants {
 
-  private val DATABASE_STR = "joymeo_data"
+
+  val rcConf_active =  ConfigFactory.load("kafka")
+  val rcConf = ConfigFactory.load(rcConf_active.getString("source.active"))
+
+  private val DATABASE_STR = rcConf.getString("source.kafka.DATABASE_STR")
 
   private val JDBC_DRIVER = "com.cloudera.impala.jdbc41.Driver"
 
   // private static String CONNECTION_URL="jdbc:impala://node1:21050/default;auth=noSasl";
-  private val CONNECTION_URL = "jdbc:impala://172.17.20.133:21050/"
+  private val CONNECTION_URL = rcConf.getString("source.kafka.CONNECTION_URL")
 
  // private val DATABASE_STR = "joymeo_data"
 
@@ -283,19 +288,31 @@ object SqlContants {
     /**
      * ALTER TABLE `c_test`.`t_order1` add COLUMN `create_time` string
      * String sqlStr= "create table if not exists "+DATABASE_STR+"."+"ods_mysql_"+mysqlBean.getDatabase()+"_"+mysqlBean.getTable()+"_"+"a"+"( \n";
-     * 只做增加字段修改
+     * 只做增加字段 和修改字段名
      */
     val alterSqls = new util.ArrayList[String]
+    val datebase = mysqlBean.data
+    val table1 = mysqlBean.table
+    val db_tb = "`"+mysqlBean.database +"`"+"."+"`"+mysqlBean.table+"`"
     val sqlStr = " ALTER TABLE  `" + DATABASE_STR + "`.`" + "ods_mysql_" + mysqlBean.database + "_" + mysqlBean.table + "_" + "a" + "` "
     val alterSql_dec = mysqlBean.sql
     //修改 decimal(10, 2) 为 decimal(10,2),去掉空格干扰
-    val alterSql = alterSql_dec.replaceAll(", ", ",")
+    val alterSql1 = alterSql_dec.replaceAll(", ", ",")
+    val sql_sqlsplit = alterSql1.split(db_tb)
+    val alterStr = sql_sqlsplit(1)
+    val alterDele_n = alterStr.replaceAll("\n", "")
+    val alterDele_t = alterDele_n.replaceAll("\t", "")
+    val alterDele_r = alterDele_t.replaceAll("\r", "")
+    val alterDele_trim = alterDele_r.trim
+    val alterSql =("\n"+alterDele_trim).replaceAll(",","\n")
   //  System.out.println(alterSql)
     if (alterSql.contains("\n")) {
       val split = alterSql.toLowerCase.split("\n")
       if (split.length > 1) for (i <- 1 until split.length) {
-        if (split(1).contains("change column")) {
+        if (split(i).contains("change column")) {
           val sb1 = new StringBuffer
+        //  val alterSplit = split(i).toString
+       //   alterSplit.deleteCharAt(sb2.lastIndexOf(",")).toString
           val s = split(i).split(" ")
           if (s.length > 4) {
             sb1.append(s(0) + " " + s(1) + " " + s(2) + " " + s(3) + " ")
@@ -322,7 +339,7 @@ object SqlContants {
           }
           val a = 1
         }
-        else if (split(1).contains("add column")) {
+        else if (split(i).contains("add column")) {
           val sb1 = new StringBuffer
           val s = split(i).split(" ")
           if (s.length > 3) {

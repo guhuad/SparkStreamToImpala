@@ -4,6 +4,7 @@
  --deploy-mode cluster \
  --conf spark.driver.extraJavaOptions=" -Dfile.encoding=utf-8 " \
  --conf spark.executor.extraJavaOptions=" -Dfile.encoding=utf-8 " \
+ --conf spark.dynamicAllocation.enabled=false \
  /usr/apps/jobs/SparkStreaming-1.0-SNAPSHOT.jar > ./spark_data_shark.log 2>&1 &
 
 
@@ -22,4 +23,4 @@
 
 
  -- 3 关闭集群
- yarn application -kill application_1644550318601_0108
+ yarn application -kill application_1644550318601_0158

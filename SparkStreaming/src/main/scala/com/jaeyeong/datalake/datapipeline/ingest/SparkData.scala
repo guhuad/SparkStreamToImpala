@@ -18,12 +18,12 @@ import scala.collection.mutable.Map
 object SparkData extends App with Serializable {
 
     //1.创建SrearmingContext
-    val conf = new SparkConf().setAppName(this.getClass.getSimpleName).setMaster("local[*]")
+    val conf = new SparkConf().setAppName(this.getClass.getSimpleName)
     val sc = new SparkContext(conf)
     sc.setLogLevel("WARN")
     sc.setCheckpointDir("./kafka")
  // val sqlContext = new SQLContext(sc)
-    val ssc = new StreamingContext(sc, Seconds(5))
+    val ssc = new StreamingContext(sc, Seconds(20))
 
     //准备连接Kafka的参数
     val kafkaParams = Map[String, Object](
@@ -56,7 +56,6 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
       val string = of.get(0).toString
       string
     })
-
 
     val test_int = 3
   }
@@ -92,6 +91,9 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
       if (rdd.count() > 0) { //当前这一时间批次有数据
         rdd.foreach(record => {
           val mysqlBean: MysqlSBRBean = JSON.parseObject(record.value(), classOf[MysqlSBRBean])
+            println("接收到的Kafk发送过来的数据为:" + record)
+
+
           try if ("INSERT" == mysqlBean.`type`) { // Contants.createDb(mysqlBean);
             val resultBean =  ResultBean(mysqlBean.database,SqlContants.getUpsertIntoSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
             SqlContants.sqlExecute(resultBean)
@@ -106,12 +108,12 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
             val resultBean =  ResultBean(mysqlBean.database,SqlContants.getAlterSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
          //   println("接收到的Kafk发送过来的数据为:" + record)
             SqlContants.sqlExecute(resultBean)
+            println("修改表结构:" + resultBean.toString)
           }
           catch {
             case e: Exception =>
               e.printStackTrace()
           }
-        //  println("接收到的Kafk发送过来的数据为:" + record)
 
            }
 
