@@ -139,27 +139,28 @@ object SqlContants {
       //
       //   for (Object value : values) {
       //       sb2.append("'"+value.toString()+"'"+",");
+
+      //      for (Object o : jsonObject) {
+      //          //json对象转Map
+      //          Map<String,Object> map = (Map<String,Object>)o;
+      //          Collection<Object> values = map.values();
+      //          int s;
+      //      }
+      //     int size = objects.size();
+      //     for (Object object : objects) {
+      //         String s = object.toString();
+      //         sb.append(object.toString()+",");
+      //     }
+      val colStr = "(" + sb1.deleteCharAt(sb1.lastIndexOf(",")).toString + ")"
+      val valueStr = " values (" + sb2.deleteCharAt(sb2.lastIndexOf(",")).toString + ")"
+      // String s = sb.deleteCharAt(sb.lastIndexOf(",")).toString();
+      // sqlStr+sb.toString(
+      // for (Map.Entry<String, String> entry : entries) {
+      //     //"and properties['pageId'] = 'page006'"
+      //     sb.append("\n and properties['"+entry.getKey()+"']='"+entry.getValue()+"'");
+      // }
+      insertSql.add(sqlStr + colStr + valueStr)
     }
-    //      for (Object o : jsonObject) {
-    //          //json对象转Map
-    //          Map<String,Object> map = (Map<String,Object>)o;
-    //          Collection<Object> values = map.values();
-    //          int s;
-    //      }
-    //     int size = objects.size();
-    //     for (Object object : objects) {
-    //         String s = object.toString();
-    //         sb.append(object.toString()+",");
-    //     }
-    val colStr = "(" + sb1.deleteCharAt(sb1.lastIndexOf(",")).toString + ")"
-    val valueStr = " values (" + sb2.deleteCharAt(sb2.lastIndexOf(",")).toString + ")"
-    // String s = sb.deleteCharAt(sb.lastIndexOf(",")).toString();
-    // sqlStr+sb.toString(
-    // for (Map.Entry<String, String> entry : entries) {
-    //     //"and properties['pageId'] = 'page006'"
-    //     sb.append("\n and properties['"+entry.getKey()+"']='"+entry.getValue()+"'");
-    // }
-    insertSql.add(sqlStr + colStr + valueStr)
     insertSql
   }
 
@@ -298,24 +299,36 @@ object SqlContants {
     val alterSql_dec = mysqlBean.sql
     //修改 decimal(10, 2) 为 decimal(10,2),去掉空格干扰
     val alterSql0 = alterSql_dec.replaceAll("`", "")
-    val alterSql1 = alterSql0.replaceAll(", ", ",")
-    val sql_sqlsplit = alterSql1.split(db_tb)
-    val alterStr = sql_sqlsplit(1)
-    val alterDele_n = alterStr.replaceAll("\n", " ")
+    val alterDele_n = alterSql0.replaceAll("\n", " ")
     val alterDele_t = alterDele_n.replaceAll("\t", " ")
     val alterDele_r = alterDele_t.replaceAll("\r", " ")
     val alterDele_trim0 = alterDele_r.trim
     val alterDele_trim = alterDele_trim0.replaceAll("\\s+", " ")
-    val alterSql6 =("\n"+alterDele_trim).replaceAll(",","\n")
+    val alterSql1_1 = alterDele_trim.replaceAll(", ", ",")
+    val alterSql1 = alterSql1_1.replaceAll(" ,", ",")
+    val sql_sqlsplit = alterSql1.split(db_tb + " ")
+    val alterStr = sql_sqlsplit(1)
+    val alterSql6 = ("\n" + alterStr).replaceAll(",", "\n")
     val alterSql = alterSql6.toLowerCase
-  //  System.out.println(alterSql)
+    //  System.out.println(alterSql)
     if (alterSql.contains("\n")) {
-      val split = alterSql.split("\n")
+      var split = alterSql.split("\n")
+      if (split.length > 1) for (i <- 1 until split.length) {
+        val isDig = Character.isDigit(split(i).charAt(0))
+        if (isDig) {
+          split(i - 1) = split(i - 1) + "," + split(i)
+          // val str: String = split.toBuffer.remove(i)
+          //  val a = 0
+        }
+        //val   split1 = split
+      }
+
+
       if (split.length > 1) for (i <- 1 until split.length) {
         if (split(i).contains("change column")) {
           val sb1 = new StringBuffer
-        //  val alterSplit = split(i).toString
-       //   alterSplit.deleteCharAt(sb2.lastIndexOf(",")).toString
+          //  val alterSplit = split(i).toString
+          //   alterSplit.deleteCharAt(sb2.lastIndexOf(",")).toString
           val s = split(i).split(" ")
           if (s.length > 4) {
             sb1.append(s(0) + " " + s(1) + " " + s(2) + " " + s(3) + " ")
@@ -339,6 +352,8 @@ object SqlContants {
               sb1.append(" string")
               alterSqls.add(sqlStr + sb1.toString)
             }
+
+
           }
           val a = 1
         }
@@ -349,28 +364,53 @@ object SqlContants {
             sb1.append(s(0) + " " + s(1) + " " + s(2) + " ")
             if (s(3).contains("int")) {
               sb1.append(" bigint ")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("decimal")) {
               sb1.append(s(3))
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("float")) {
               sb1.append(" float")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("double")) {
               sb1.append(" double")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else {
               sb1.append(" string")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             val a = 1
           }
-        }else{
-          println("表结构异常修改："+ mysqlBean.toString)
+        } else {
+          // println("表结构异常修改："+ mysqlBean.toString)
         }
       }
       else if (split.length > 0) for (i <- 1 until split.length) {
@@ -381,22 +421,47 @@ object SqlContants {
             sb1.append(s(0) + " " + s(1) + " " + s(2) + " ")
             if (s(3).contains("int")) {
               sb1.append(" bigint ")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("decimal")) {
               sb1.append(s(3))
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("float")) {
               sb1.append(" float")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("double")) {
               sb1.append(" double")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else {
               sb1.append(" string")
+              for (i <- 3 until s.length) {
+                if (s(i).contains("default")) {
+                  sb1.append(" " + s(i) + " " + s(i + 1))
+                }
+              }
               alterSqls.add(sqlStr + sb1.toString)
             }
             val a = 1
@@ -426,12 +491,15 @@ object SqlContants {
           }
           else if (splitLower(7).contains("double")) {
             sb1.append(" double")
+
             alterSqls.add(sqlStr + sb1.toString)
           }
           else {
             sb1.append(" string")
+
             alterSqls.add(sqlStr + sb1.toString)
           }
+
         }
         val a = 1
       }
@@ -441,33 +509,58 @@ object SqlContants {
           sb1.append(" add column " + " " + splitLower(5) + " ")
           if (splitLower(6).contains("int")) {
             sb1.append(" bigint ")
+            for (i <- 5 until splitLower.length) {
+              if (splitLower(i).contains("default")) {
+                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
+              }
+            }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("decimal")) {
             sb1.append(splitLower(6))
+            for (i <- 5 until splitLower.length) {
+              if (splitLower(i).contains("default")) {
+                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
+              }
+            }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("float")) {
             sb1.append(" float")
+            for (i <- 5 until splitLower.length) {
+              if (splitLower(i).contains("default")) {
+                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
+              }
+            }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("double")) {
             sb1.append(" double")
+            for (i <- 5 until splitLower.length) {
+              if (splitLower(i).contains("default")) {
+                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
+              }
+            }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else {
             sb1.append(" string")
+            for (i <- 5 until splitLower.length) {
+              if (splitLower(i).contains("default")) {
+                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
+              }
+            }
             alterSqls.add(sqlStr + sb1.toString)
           }
+
           val a = 1
         }
-      }else{
-        println("表结构异常修改："+ mysqlBean.toString)
+      } else {
+        //  println("表结构异常修改："+ mysqlBean.toString)
       }
     }
     alterSqls
   }
-
 }
 
 

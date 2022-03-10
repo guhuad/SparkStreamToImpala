@@ -91,7 +91,7 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
       if (rdd.count() > 0) { //当前这一时间批次有数据
         rdd.foreach(record => {
           val mysqlBean: MysqlSBRBean = JSON.parseObject(record.value(), classOf[MysqlSBRBean])
-           // println("接收到的Kafk发送过来的数据为:" + record)
+          //  println("接收到的Kafk发送过来的数据为:" + record)
 
 
           try if ("INSERT" == mysqlBean.`type`) { // Contants.createDb(mysqlBean);
@@ -99,16 +99,18 @@ val topics = Array(rcConf.getString("source.kafka.topic"))
             SqlContants.sqlExecute(resultBean)
           }
           else if ("UPDATE" == mysqlBean.`type`) {
-            val resultBean =  ResultBean(mysqlBean.database,SqlContants.getUpsertIntoSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+            val resultBean =  ResultBean(mysqlBean.database,SqlContants.getUpdateSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+          //  println("封装修改表结构:" + resultBean.toString)
             SqlContants.sqlExecute(resultBean)
           }else if ("DELETE" == mysqlBean.`type`) {
             val resultBean =  ResultBean(mysqlBean.database,SqlContants.getDeleteSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
             SqlContants.sqlExecute(resultBean)
           }else if ("ALTER" == mysqlBean.`type`) {
+            println("来源数据修改表结构:" + record)
             val resultBean =  ResultBean(mysqlBean.database,SqlContants.getAlterSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
          //   println("接收到的Kafk发送过来的数据为:" + record)
             SqlContants.sqlExecute(resultBean)
-            println("修改表结构:" + resultBean.toString)
+            println("封装修改表结构:" + resultBean.toString)
           }
           catch {
             case e: Exception =>
