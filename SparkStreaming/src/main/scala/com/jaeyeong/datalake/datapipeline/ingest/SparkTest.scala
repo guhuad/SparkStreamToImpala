@@ -15,7 +15,7 @@ import org.apache.spark.sql.SQLContext
 
 import scala.collection.mutable
 import scala.collection.mutable.Map
-object SparkData extends App with Serializable {
+object SparkTest extends App with Serializable {
 
     //1.创建SrearmingContext
     val conf = new SparkConf().setAppName(this.getClass.getSimpleName)
