@@ -14,6 +14,14 @@ import org.apache.spark.streaming.kafka010.KafkaUtils
 import collection.JavaConversions._
 import scala.collection.mutable.Map
 
+
+
+/**
+ * @Author: denggunghua
+ * @Description:
+ * @Date: 2022/03/11
+ * E-mail:153447579@qq.com
+ */
 class KafkaStreamSource(
                          sparkSessionParm:SparkSession,
                          ssctxParam:StreamingContext,

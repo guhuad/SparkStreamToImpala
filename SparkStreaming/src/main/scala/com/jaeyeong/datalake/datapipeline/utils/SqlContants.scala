@@ -8,6 +8,12 @@ import com.alibaba.fastjson.{JSON, JSONArray, JSONObject}
 import com.jaeyeong.datalake.datapipeline.bean.{MysqlSBRBean, ResultBean}
 import com.typesafe.config.ConfigFactory
 
+/**
+ * @Author: denggunghua
+ * @Description:
+ * @Date: 2022/03/11
+ * E-mail:153447579@qq.com
+ */
 object SqlContants {
 
 
@@ -249,12 +255,9 @@ object SqlContants {
         }
 
         val a = 1
-      } else {
-
-        for (pk <- pks) { // sb1.append(pk.toString()+",");
-          if (jsonObjectType.getString(pk.toString).toLowerCase.contains("int") || jsonObjectType.getString(pk.toString).toLowerCase.contains("decimal") || jsonObjectType.getString(pk.toString).toLowerCase.contains("float") || jsonObjectType.getString(pk.toString).toLowerCase.contains("double")) sb2.append("`" + pk.toString + "`" + " = " + jsonObjectData.getString(pk.toString) + ",")
-          else sb2.append("`" + pk.toString + "`" + " = " + "'" + jsonObjectData.getString(pk.toString) + "'" + ",")
-        }
+      } else for (pk <- pks) { // sb1.append(pk.toString()+",");
+        if (jsonObjectType.getString(pk.toString).toLowerCase.contains("int") || jsonObjectType.getString(pk.toString).toLowerCase.contains("decimal") || jsonObjectType.getString(pk.toString).toLowerCase.contains("float") || jsonObjectType.getString(pk.toString).toLowerCase.contains("double")) sb2.append("`" + pk.toString + "`" + " = " + jsonObjectData.getString(pk.toString) + ",")
+        else sb2.append("`" + pk.toString + "`" + " = " + "'" + jsonObjectData.getString(pk.toString) + "'" + ",")
       }
 
 
@@ -365,45 +368,35 @@ object SqlContants {
             if (s(3).contains("int")) {
               sb1.append(" bigint ")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("decimal")) {
               sb1.append(s(3))
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("float")) {
               sb1.append(" float")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("double")) {
               sb1.append(" double")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else {
               sb1.append(" string")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
@@ -422,45 +415,35 @@ object SqlContants {
             if (s(3).contains("int")) {
               sb1.append(" bigint ")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("decimal")) {
               sb1.append(s(3))
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("float")) {
               sb1.append(" float")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else if (s(3).contains("double")) {
               sb1.append(" double")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
             else {
               sb1.append(" string")
               for (i <- 3 until s.length) {
-                if (s(i).contains("default")) {
-                  sb1.append(" " + s(i) + " " + s(i + 1))
-                }
+                if (s(i).contains("default")) sb1.append(" " + s(i) + " " + s(i + 1))
               }
               alterSqls.add(sqlStr + sb1.toString)
             }
@@ -510,45 +493,35 @@ object SqlContants {
           if (splitLower(6).contains("int")) {
             sb1.append(" bigint ")
             for (i <- 5 until splitLower.length) {
-              if (splitLower(i).contains("default")) {
-                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
-              }
+              if (splitLower(i).contains("default")) sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
             }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("decimal")) {
             sb1.append(splitLower(6))
             for (i <- 5 until splitLower.length) {
-              if (splitLower(i).contains("default")) {
-                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
-              }
+              if (splitLower(i).contains("default")) sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
             }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("float")) {
             sb1.append(" float")
             for (i <- 5 until splitLower.length) {
-              if (splitLower(i).contains("default")) {
-                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
-              }
+              if (splitLower(i).contains("default")) sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
             }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else if (splitLower(6).contains("double")) {
             sb1.append(" double")
             for (i <- 5 until splitLower.length) {
-              if (splitLower(i).contains("default")) {
-                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
-              }
+              if (splitLower(i).contains("default")) sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
             }
             alterSqls.add(sqlStr + sb1.toString)
           }
           else {
             sb1.append(" string")
             for (i <- 5 until splitLower.length) {
-              if (splitLower(i).contains("default")) {
-                sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
-              }
+              if (splitLower(i).contains("default")) sb1.append(" " + splitLower(i) + " " + splitLower(i + 1))
             }
             alterSqls.add(sqlStr + sb1.toString)
           }

@@ -12,6 +12,12 @@ import org.apache.spark.streaming.kafka010.OffsetRange
 import scala.collection.mutable
 import scala.collection.mutable.Map
 
+/**
+ * @Author: denggunghua
+ * @Description:
+ * @Date: 2022/03/11
+ * E-mail:153447579@qq.com
+ */
 object OffsetUtil {
 
 

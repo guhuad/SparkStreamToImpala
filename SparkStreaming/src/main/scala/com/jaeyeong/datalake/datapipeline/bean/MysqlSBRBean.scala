@@ -1,5 +1,12 @@
 package com.jaeyeong.datalake.datapipeline.bean
 
+
+/**
+ * @Author: denggunghua
+ * @Description:
+ * @Date: 2022/03/11
+ * E-mail:153447579@qq.com
+ */
 case class MysqlSBRBean(
                             data: String = null
 ,database: String = null

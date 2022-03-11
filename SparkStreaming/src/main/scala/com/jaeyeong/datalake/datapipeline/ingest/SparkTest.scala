@@ -15,6 +15,13 @@ import org.apache.spark.sql.SQLContext
 
 import scala.collection.mutable
 import scala.collection.mutable.Map
+
+/**
+ * @Author: denggunghua
+ * @Description:
+ * @Date: 2022/03/11
+ * E-mail:153447579@qq.com
+ */
 object SparkTest extends App with Serializable {
 
     //1.创建SrearmingContext
