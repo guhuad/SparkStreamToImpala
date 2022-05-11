@@ -26,7 +26,7 @@ object OffsetUtil {
 
   //从数据库读取偏移量
   def getOffsetMap(groupid: String, topic: String) = {
-  //  Class.forName("com.mysql.jdbc.Driver")
+    //  Class.forName("com.mysql.jdbc.Driver")
     val connection = DriverManager.getConnection(rcConf.getString("source.kafka.JDBC_CONN"), rcConf.getString("source.kafka.MYSQL_USER"), rcConf.getString("source.kafka.MYSQL_PASSWORD"))
     val pstmt = connection.prepareStatement("select * from t_offset where groupid=? and topic=?")
     pstmt.setString(1, groupid)
@@ -44,7 +44,7 @@ object OffsetUtil {
 
   //将偏移量保存到数据库
   def saveOffsetRanges(groupid: String, offsetRange: Array[OffsetRange]) = {
-   // Class.forName("com.mysql.jdbc.Driver")
+    // Class.forName("com.mysql.jdbc.Driver")
     val connection = DriverManager.getConnection(rcConf.getString("source.kafka.JDBC_CONN"), rcConf.getString("source.kafka.MYSQL_USER"), rcConf.getString("source.kafka.MYSQL_PASSWORD"))
     //replace into表示之前有就替换,没有就插入
     val pstmt = connection.prepareStatement("replace into t_offset (`topic`, `partition`, `groupid`, `offset`) values(?,?,?,?)")
@@ -58,7 +58,6 @@ object OffsetUtil {
     pstmt.close()
     connection.close()
   }
-
 
 }
 

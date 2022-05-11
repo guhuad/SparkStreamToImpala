@@ -1,8 +1,9 @@
 package com.jaeyeong.datalake.datapipeline.utils
 
 import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, SQLException}
+import java.text.SimpleDateFormat
 import java.util
-import java.util.{ArrayList, List, Set}
+import java.util.{ArrayList, Date, List, Set}
 
 import com.alibaba.fastjson.{JSON, JSONArray, JSONObject}
 import com.jaeyeong.datalake.datapipeline.bean.{MysqlSBRBean, ResultBean}
@@ -27,7 +28,7 @@ object SqlContants {
   // private static String CONNECTION_URL="jdbc:impala://node1:21050/default;auth=noSasl";
   private val CONNECTION_URL = rcConf.getString("source.kafka.CONNECTION_URL")
 
- // private val DATABASE_STR = "joymeo_data"
+  // private val DATABASE_STR = "joymeo_data"
 
 
   //定义数据库连接
@@ -36,7 +37,7 @@ object SqlContants {
 
   //定义PreparedStatement对象
 
-   var ps:PreparedStatement = null
+  var ps:PreparedStatement = null
 
   //定义查询的结果集
 
@@ -174,7 +175,7 @@ object SqlContants {
   // mysql数据同步Sql
   @throws[SQLException]
   def sqlExecute(rsBean: ResultBean): Unit = {
-     conn = getConn(CONNECTION_URL + DATABASE_STR)
+    conn = getConn(CONNECTION_URL + DATABASE_STR)
     val sqlList = rsBean.sqlList
     //   conn=getConn(CONNECTION_URL);
     // ps = conn.prepareStatement(rsBean.getSql());
@@ -183,14 +184,14 @@ object SqlContants {
     try if (sqlList != null) {
       import scala.collection.JavaConversions._
       for (sql <- sqlList) { // System.out.println(sql);
-       ps = conn.prepareStatement(sql)
+        ps = conn.prepareStatement(sql)
         ps.execute
       }
     }
     catch {
       case e: SQLException =>
 
-        // System.out.println(sqlStr);
+      // System.out.println(sqlStr);
       // e.printStackTrace();
     } finally {
       if (ps != null) try //关闭
@@ -246,7 +247,7 @@ object SqlContants {
         // Collection<Object> values = jsonObject1.values();
         val objects = strings.toArray
         for (i <- 0 until strings.size) {
-        //  sb1.append("`" + objects(i).toString + "`" + ",")
+          //  sb1.append("`" + objects(i).toString + "`" + ",")
           if (jsonObjectData.getString(objects(i).toString).toLowerCase.contains("int") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("decimal") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("float") || jsonObjectData.getString(objects(i).toString).toLowerCase.contains("double")) sb2.append("`" + objects(i).toString + "`" + " = " + jsonObjectData.getString(objects(i).toString) + ",")
           else {
             sb2.append("`" + objects(i).toString + "`" + " = " + "'" + jsonObjectData.getString(objects(i).toString) + "'" + ",")
@@ -280,6 +281,9 @@ object SqlContants {
     }
     conn
   }
+
+
+
 
 
   /**
@@ -533,6 +537,42 @@ object SqlContants {
       }
     }
     alterSqls
+  }
+
+
+
+  /**
+   * 消费kafka数据处理
+   */
+  def consumerRecordData(record:String): Unit ={
+    val mysqlBean: MysqlSBRBean = JSON.parseObject(record, classOf[MysqlSBRBean])
+    // println("接收到的Kafk发送过来的数据为:" + record)
+
+
+    try if ("INSERT" == mysqlBean.`type`) { // Contants.createDb(mysqlBean);
+      val resultBean =  ResultBean(mysqlBean.database,SqlContants.getUpsertIntoSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+      SqlContants.sqlExecute(resultBean)
+    }
+    else if ("UPDATE" == mysqlBean.`type`) {
+      val resultBean =  ResultBean(mysqlBean.database,SqlContants.getUpdateSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+      // println("封装修改表结构:" + resultBean.toString)
+      SqlContants.sqlExecute(resultBean)
+    }else if ("DELETE" == mysqlBean.`type`) {
+      val resultBean =  ResultBean(mysqlBean.database,SqlContants.getDeleteSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+      SqlContants.sqlExecute(resultBean)
+    }else if ("ALTER" == mysqlBean.`type`) {
+      val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+      // val date = new Date()
+      println(sdf.format(new Date()) + "--来源数据修改表结构:" + record)
+      val resultBean =  ResultBean(mysqlBean.database,SqlContants.getAlterSql(mysqlBean),mysqlBean.table,mysqlBean.`type`)
+      //   println("接收到的Kafk发送过来的数据为:" + record)
+      SqlContants.sqlExecute(resultBean)
+      println(sdf.format(new Date()) + "--封装修改表结构:" + resultBean.toString)
+    }
+    catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
   }
 }
 
